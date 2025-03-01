@@ -3,8 +3,7 @@
     <div class="content">
       <AppInfo :allMovies="movies.length" :likedMovies="movies.filter(item => item.like === true).length" />
       <SearchPanel :filter="filter" @searchMovie="searchMovie" @filmsFilter="onFilmsFilter" />
-      <MovieLIst @onFavoruteToggle="OnFavoruteToggle" @deleteToggle="onDeleteToggle" @likeToggle="onLikeToggle"
-        :movies="filterMovie" />
+      <MovieLIst @toggleHandle="toggleHandle" @deleteToggle="onDeleteToggle" :movies="filterMovie" />
       <MovieAddForm @addMovie="AddMovie" />
     </div>
   </div>
@@ -62,20 +61,12 @@ export default {
     AddMovie(newMovie) {
       this.movies.push(newMovie)
     },
-    OnFavoruteToggle(id) {
+    toggleHandle({ id, prop }) {
       this.movies = this.movies.map(movie => {
-        if (movie.id === id) {
-          movie.favorute = !movie.favorute
+        if (movie.id == id) {
+         return  {...movie , [prop] : !movie[prop]}
         }
         return movie
-      })
-    },
-    onLikeToggle(id) {
-      this.movies = this.movies.map(item => {
-        if (item.id === id) {
-          item.like = !item.like
-        }
-        return item
       })
     },
     onDeleteToggle(id) {

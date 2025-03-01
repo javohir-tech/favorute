@@ -2,8 +2,8 @@
     <div>
         <ul style="list-style: none;">
             <MovieListItem v-for="movie in movies" :kino="movie" :key="movie.id"
-                @favourite-toggle="$emit('onFavoruteToggle', movie.id)"
-                @delete-toggle="$emit('deleteToggle', movie.id)" @like-toggle="$emit('likeToggle', movie.id)" />
+                @toggleHandle="$emit('toggleHandle', $event)"
+                @delete-toggle="$emit('deleteToggle', movie.id)" />
         </ul>
     </div>
 </template>
