@@ -53,7 +53,7 @@ export default {
           } else if (this.filter === "mashhur") {
             return item.favorute === true
           }
-          return true // allMovies bo'lsa hammasi chiqadi
+          return true 
         })
     }
   },

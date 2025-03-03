@@ -6,11 +6,14 @@
                 <input v-model.number="viewers" type="number" class="form-control py-2"
                     placeholder="Nechi Marta Ko'rilgan">
             </div>
-            <button class="btn btn-success w-100">Qo'shish</button>
+            <SuccessButton class="w-100 btn-success">
+                Qo'shish
+            </SuccessButton>
         </form>
     </div>
 </template>
 <script>
+
 export default {
     data() {
         return {
