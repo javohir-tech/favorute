@@ -1,15 +1,23 @@
 <template>
   <div class="container">
     <div class="content">
+      <!-- <SuccessButton @click="FetchMovies">click</SuccessButton> -->
       <AppInfo :allMovies="movies.length" :likedMovies="movies.filter(item => item.like === true).length" />
       <SearchPanel :filter="filter" @searchMovie="searchMovie" @filmsFilter="onFilmsFilter" />
-      <MovieLIst @toggleHandle="toggleHandle" @deleteToggle="onDeleteToggle" :movies="filterMovie" />
+      <div v-if="!movies.length && !loading">
+        <h3 class="text-center text-danger">Kinolar Yo'q</h3>
+      </div>
+      <div v-else-if="loading">
+        <h3 class="text-center text-success">Loading...</h3>
+      </div>
+      <MovieLIst v-else="" @toggleHandle="toggleHandle" @deleteToggle="onDeleteToggle" :movies="filterMovie" />
       <MovieAddForm @addMovie="AddMovie" />
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios';
 import AppInfo from './Components/AppInfo.vue'
 import MovieAddForm from './Components/MovieAddForm.vue';
 import MovieLIst from './Components/MovieLIst.vue';
@@ -23,24 +31,10 @@ export default {
   },
   data() {
     return {
-      movies: [
-        {
-          name: "Taxtlar O'yini",
-          viewers: 1234,
-          like: false,
-          favorute: false,
-          id: 1
-        },
-        {
-          name: "Titanlar Hujumi",
-          viewers: 12934,
-          like: true,
-          favorute: true,
-          id: 2
-        }
-      ],
+      movies: [],
       search: "",
-      filter: "allMovies"
+      filter: "allMovies",
+      loading: false
     }
   },
   computed: {
@@ -53,7 +47,7 @@ export default {
           } else if (this.filter === "mashhur") {
             return item.favorute === true
           }
-          return true 
+          return true
         })
     }
   },
@@ -64,7 +58,7 @@ export default {
     toggleHandle({ id, prop }) {
       this.movies = this.movies.map(movie => {
         if (movie.id == id) {
-         return  {...movie , [prop] : !movie[prop]}
+          return { ...movie, [prop]: !movie[prop] }
         }
         return movie
       })
@@ -77,7 +71,31 @@ export default {
     },
     onFilmsFilter(filterType) {
       this.filter = filterType
-    }
+    },
+    async FetchMovies() {
+      this.loading= true
+      try {
+        setTimeout(async() => {
+          const { data } = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
+          const newData = data.map((item) => {
+            return {
+              name: item.title,
+              viewers: item.id * 10,
+              favorute: false,
+              like: false,
+              id: item.id
+            }
+          })
+          this.movies = newData
+          this.loading = false
+        } , 3000)
+      } catch (error) {
+        alert(error)
+      }
+    },
+  },
+  mounted() {
+    this.FetchMovies()
   }
 }
 </script>
