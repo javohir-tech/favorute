@@ -58,8 +58,10 @@ export default {
     }
   },
   methods: {
-    AddMovie(newMovie) {
-      this.movies.push(newMovie)
+    async AddMovie(newMovie) {
+      const response = await axios.post('https://jsonplaceholder.typicode.com/posts', newMovie)
+      // console.log(response)
+      this.movies.push(response.data)
     },
     toggleHandle({ id, prop }) {
       this.movies = this.movies.map(movie => {
@@ -69,7 +71,9 @@ export default {
         return movie
       })
     },
-    onDeleteToggle(id) {
+    async onDeleteToggle(id) {
+      const response =  await axios.delete(`https://jsonplaceholder.typicode.com/posts/${id}`)
+      console.log(response)
       this.movies = this.movies.filter(item => item.id !== id)
     },
     searchMovie(newSearch) {
