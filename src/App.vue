@@ -11,6 +11,7 @@
         <h3 class="text-center text-success">Loading...</h3>
       </div>
       <MovieLIst v-else="" @toggleHandle="toggleHandle" @deleteToggle="onDeleteToggle" :movies="filterMovie" />
+      <Pagination :pageNumbers="pageNumbers" :page="page" @togglePage="togglePage" @toggleButton="toggleButton" />
       <MovieAddForm @addMovie="AddMovie" />
     </div>
   </div>
@@ -22,11 +23,13 @@ import AppInfo from './Components/AppInfo.vue'
 import MovieAddForm from './Components/MovieAddForm.vue';
 import MovieLIst from './Components/MovieLIst.vue';
 import SearchPanel from './Components/SearchPanel.vue'
+import Pagination from './Components/Pagination.vue';
 export default {
   components: {
     AppInfo,
     SearchPanel,
     MovieLIst,
+    Pagination,
     MovieAddForm
   },
   data() {
@@ -34,7 +37,10 @@ export default {
       movies: [],
       search: "",
       filter: "allMovies",
-      loading: false
+      loading: false,
+      limit: 10,
+      page: 1,
+      pageNumbers: 0,
     }
   },
   computed: {
@@ -73,11 +79,16 @@ export default {
       this.filter = filterType
     },
     async FetchMovies() {
-      this.loading= true
+      this.loading = true
       try {
-        setTimeout(async() => {
-          const { data } = await axios.get('https://jsonplaceholder.typicode.com/posts?_limit=10')
-          const newData = data.map((item) => {
+        setTimeout(async () => {
+          const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+            params: {
+              _limit: this.limit,
+              _page: this.page
+            }
+          })
+          const newData = response.data.map((item) => {
             return {
               name: item.title,
               viewers: item.id * 10,
@@ -86,16 +97,32 @@ export default {
               id: item.id
             }
           })
+          this.pageNumbers = Math.ceil(response.headers['x-total-count'] / 10)
           this.movies = newData
           this.loading = false
-        } , 3000)
+        }, 3000)
       } catch (error) {
         alert(error)
       }
     },
+    togglePage(page) {
+      this.page = page
+    },
+    toggleButton(button) {
+      if (button === "next" && this.page != this.pageNumbers) {
+        this.page++
+      } else if (button === "back" && this.page != 1) {
+        this.page--
+      }
+    }
   },
   mounted() {
     this.FetchMovies()
+  },
+  watch: {
+    page() {
+      this.FetchMovies()
+    }
   }
 }
 </script>
